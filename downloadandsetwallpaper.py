@@ -1,23 +1,21 @@
 import urllib.request
 from PIL import Image
-from wallpaper import set_wallpaper, get_wallpaper
 import time
-import logging
-
-logging.basicConfig(filename='app.log', filemode='a', format='%(asctime)s - %(message)s', level=logging.INFO)
-logging.info('Start...')
+import ctypes
 
 url = "https://cdn.star.nesdis.noaa.gov/GOES17/ABI/FD/GEOCOLOR/5424x5424.jpg"
+SPI_SETDESKWALLPAPER = 20 
+latest_original_path= r'C:\Users\sfeng\Projects\RefreshWallpaper\latest.jpg'
+cropped_path= r'C:\Users\sfeng\Projects\RefreshWallpaper\cropped.jpg'
 
 while(True):
     try:
-        urllib.request.urlretrieve(url, 'latest.jpg')
-        img = Image.open("latest.jpg") 
+        urllib.request.urlretrieve(url, latest_original_path)
+        img = Image.open(latest_original_path) 
         w, h = img.size
         cropped = img.crop((0, 0, w, h * 0.4))
-        cropped.save("cropped.jpg")
-        set_wallpaper("cropped.jpg")
-        logging.info('Updated wall paper')
+        cropped.save(cropped_path)
+        ctypes.windll.user32.SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, cropped_path , 0)
     except Exception as e:
-        logging.error("Exception occurred", exc_info=True)
+        print(e)
     time.sleep(600)
